@@ -1,6 +1,6 @@
 # MIT License
 
-Copyright (c) 2025 BSOLwaitinglist authors
+Copyright (c) 2025 Crown copyright (NHS Birmingham and Solihull Integrated Care Board)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
