@@ -1,0 +1,17 @@
+Package: BSOLwaitinglist
+Type: Package
+Title: An R package wrapper fro the waiting list modelling and simualtion used in BSOL ICB
+Version: 0.1.0
+Authors@R: c(
+    person("Chris", "Mainey", ,"c.mainey1@nhs.net", c("cre","aut"), comment = c(ORCID ="0000-0002-3018-6171"))
+  )
+Description: Contains convenience functions foir working out relevant values, Rcpp funcitons for fast single-compartment simulation, and monte carlo wrappers for applying sims.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Imports: 
+    NHSRwaitinglist,
+    Rcpp
+RoxygenNote: 7.3.3
+LinkingTo: 
+    Rcpp
