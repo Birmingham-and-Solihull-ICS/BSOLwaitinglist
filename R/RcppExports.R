@@ -2,14 +2,14 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 wl_join_cpp <- function(wl_1, wl_2, referral_index = 0L) {
-    .Call('_BSOLwaitinglist_wl_join_cpp', PACKAGE = 'BSOLwaitinglist', wl_1, wl_2, referral_index)
+    .Call(`_BSOLwaitinglist_wl_join_cpp`, wl_1, wl_2, referral_index)
 }
 
 wl_schedule_cpp <- function(waiting_list, schedule, referral_index = 0L, removal_index = 1L, unscheduled = FALSE) {
-    .Call('_BSOLwaitinglist_wl_schedule_cpp', PACKAGE = 'BSOLwaitinglist', waiting_list, schedule, referral_index, removal_index, unscheduled)
+    .Call(`_BSOLwaitinglist_wl_schedule_cpp`, waiting_list, schedule, referral_index, removal_index, unscheduled)
 }
 
 wl_simulator_cpp <- function(start_date_ = NULL, end_date_ = NULL, demand = 10.0, capacity = 11.0, waiting_list_ = NULL, withdrawal_prob = NA_real_, detailed_sim = FALSE) {
-    .Call('_BSOLwaitinglist_wl_simulator_cpp', PACKAGE = 'BSOLwaitinglist', start_date_, end_date_, demand, capacity, waiting_list_, withdrawal_prob, detailed_sim)
+    .Call(`_BSOLwaitinglist_wl_simulator_cpp`, start_date_, end_date_, demand, capacity, waiting_list_, withdrawal_prob, detailed_sim)
 }
 
