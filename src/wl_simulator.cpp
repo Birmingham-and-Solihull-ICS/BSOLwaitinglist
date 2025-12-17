@@ -10,7 +10,12 @@ IntegerVector rgeom_cpp(int n, double prob) {
     return out;
 }
 
-// Replace wl_join_cpp with this implementation that preserves classes/levels
+//' Join two waiting lists
+//' @param wl_1 First waiting list
+//' @param wl_2 Second waiting list
+//' @param referral_index Integer index of referral column (0-based in C++)
+//' @return Joined waiting list
+//' @export
 // [[Rcpp::export]]
 DataFrame wl_join_cpp(DataFrame wl_1, DataFrame wl_2, int referral_index = 0) {
     // Use R's rbind to preserve column classes/attributes, then reorder by referral column
