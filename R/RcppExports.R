@@ -11,10 +11,117 @@ wl_join_cpp <- function(wl_1, wl_2, referral_index = 0L) {
     .Call(`_BSOLwaitinglist_wl_join_cpp`, wl_1, wl_2, referral_index)
 }
 
+#' Schedule a waiting list against a sequence of session dates
+#'
+#' Applies a capacity schedule to a waiting list and returns a data frame
+#' with scheduling results. Column indices are **0-based** (C++ convention).
+#'
+#' @param waiting_list A `data.frame` containing the waiting list. It should
+#'   include date columns referenced by `referral_index` and (optionally) `removal_index`.
+#' @param schedule A vector of `Date` values (e.g., `as.Date(...)`) representing
+#'   the chronological sequence of session dates used for scheduling.
+#' @param referral_index Integer (0-based) column index in `waiting_list` that
+#'   holds the referral date. Default is `0`.
+#' @param removal_index Integer (0-based) column index in `waiting_list` that
+#'   holds the removal or discharge date (if present). Default is `1`.
+#' @param unscheduled Logical flag. If `TRUE`, the output will include (or focus on)
+#'   cases that could not be scheduled under the provided `schedule`/capacity.
+#'
+#' @return A `data.frame` with the scheduling results. The precise schema depends
+#'   on the implementation, but typically includes scheduled dates and indicators
+#'   of whether each record was scheduled or remained unscheduled.
+#'
+#' @details
+#' - Indices are **0-based** in the C++ implementation. When calling from R, pass
+#'   integers consistent with the wrapper defaults (e.g., `0L`, `1L`).
+#' - `schedule` must be of R's `Date` type; ensure inputs are `as.Date(...)`.
+#' - The function assumes `waiting_list` contains the necessary columns referenced
+#'   by the supplied indices.
+#'
+#' @examples
+#' \dontrun{
+#' wl <- data.frame(
+#'   referral_date = as.Date(c("2024-01-10", "2024-01-15", "2024-01-20")),
+#'   removal_date  = as.Date(c(NA, "2024-02-05", NA))
+#' )
+#' sess <- as.Date(c("2024-02-01", "2024-02-08", "2024-02-15"))
+#'
+#' # Column indices are 0-based in C++ (referral=0, removal=1):
+#' res <- wl_schedule_cpp(wl, sess, referral_index = 0L, removal_index = 1L)
+#' head(res)
+#'
+#' # Return/Include unscheduled cases:
+#' res_uns <- wl_schedule_cpp(wl, sess, referral_index = 0L, removal_index = 1L,
+#'                            unscheduled = TRUE)
+#' }
+#' @export
 wl_schedule_cpp <- function(waiting_list, schedule, referral_index = 0L, removal_index = 1L, unscheduled = FALSE) {
     .Call(`_BSOLwaitinglist_wl_schedule_cpp`, waiting_list, schedule, referral_index, removal_index, unscheduled)
 }
 
+#' Waiting list simulator
+#'
+#' Simulates waiting list dynamics between optional start/end dates given
+#' arrival (demand), capacity, and optional withdrawals. An existing waiting
+#' list can be supplied to seed the initial state. If `detailed_sim = TRUE`,
+#' the function returns a more granular trajectory.
+#'
+#' @param start_date_ `Date` or `NULL`. Start date of the simulation.
+#'   If `NULL`, an internal default is used.
+#' @param end_date_ `Date` or `NULL`. End date of the simulation.
+#'   If `NULL`, an internal default is used.
+#' @param demand Numeric, expected arrivals per time unit (e.g., per day or per session).
+#'   Default `10.0`.
+#' @param capacity Numeric, expected capacity per time unit (e.g., per day or per session).
+#'   Default `11.0`.
+#' @param waiting_list_ `data.frame` or `NULL`. Optional initial waiting list to seed
+#'   the simulation. If `NULL`, the simulation starts from an empty list or internal default.
+#' @param withdrawal_prob Numeric probability in `[0, 1]` for withdrawal events,
+#'   or `NA_real_` to disable withdrawals. Default `NA_real_`.
+#' @param detailed_sim Logical. If `TRUE`, return detailed per-period results;
+#'   otherwise return an aggregated summary. Default `FALSE`.
+#'
+#' @return A `data.frame` with the simulated waiting list trajectory. The schema depends
+#'   on `detailed_sim` (e.g., per-period metrics when `TRUE`, aggregated endpoints when `FALSE`).
+#'
+#' @details
+#' - `start_date_` / `end_date_` are `Nullable<Date>` at the C++ level; pass `NULL`
+#'   from R if you want internal defaults.
+#' - `waiting_list_` may be `NULL` or a `data.frame` with necessary columns as expected
+#'   by the simulator implementation.
+#' - `withdrawal_prob = NA_real_` disables withdrawals; otherwise specify a probability
+#'   between 0 and 1.
+#'
+#' @examples
+#' \dontrun{
+#' # Simple run with explicit dates and parameters
+#' res <- wl_simulator_cpp(
+#'   start_date_   = as.Date("2024-01-01"),
+#'   end_date_     = as.Date("2024-03-31"),
+#'   demand        = 12.0,
+#'   capacity      = 10.0,
+#'   waiting_list_ = NULL,
+#'   withdrawal_prob = NA_real_,
+#'   detailed_sim  = TRUE
+#' )
+#' head(res)
+#'
+#' # Seed with an initial waiting list and enable withdrawals
+#' wl0 <- data.frame(
+#'   referral_date = as.Date(c("2023-12-10", "2023-12-20")),
+#'   priority      = c(1L, 2L)
+#' )
+#' res2 <- wl_simulator_cpp(
+#'   start_date_   = as.Date("2024-01-01"),
+#'   end_date_     = as.Date("2024-02-01"),
+#'   demand        = 8.0,
+#'   capacity      = 9.0,
+#'   waiting_list_ = wl0,
+#'   withdrawal_prob = 0.05,
+#'   detailed_sim  = FALSE
+#' )
+#' }
+#' @export
 wl_simulator_cpp <- function(start_date_ = NULL, end_date_ = NULL, demand = 10.0, capacity = 11.0, waiting_list_ = NULL, withdrawal_prob = NA_real_, detailed_sim = FALSE) {
     .Call(`_BSOLwaitinglist_wl_simulator_cpp`, start_date_, end_date_, demand, capacity, waiting_list_, withdrawal_prob, detailed_sim)
 }
